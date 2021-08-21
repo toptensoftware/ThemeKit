@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../buildtools/Topten.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TtsCodeSign>True</TtsCodeSign>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright © 2014-2021 Topten Software.  All Rights Reserved</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/toptensoftware/themekit</PackageProjectUrl>
+    <PackageTags>ThemeKit TODO</PackageTags>
+    <Description>ThemeKit TODO</Description>
+    <RepositoryUrl>https://github.com/toptensoftware/themekit</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+
+</Project>

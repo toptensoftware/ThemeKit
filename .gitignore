@@ -1,0 +1,6 @@
+.vs
+Build
+bin
+obj
+*.suo
+*.nupkg

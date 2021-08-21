@@ -1,0 +1,56 @@
+
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build ThemeKit",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "/consoleloggerparameters:NoSummary",
+                "./Topten.ThemeKit/Topten.ThemeKit.csproj"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build ThemeKit.Lite",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "/consoleloggerparameters:NoSummary",
+                "./Topten.ThemeKit/Topten.ThemeKit.Lite.csproj"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build Tests",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "/consoleloggerparameters:NoSummary",
+                "./Topten.ThemeKit.Test/Topten.ThemeKit.Test.csproj"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
