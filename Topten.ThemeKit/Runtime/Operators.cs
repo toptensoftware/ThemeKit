@@ -5,48 +5,110 @@ using System.Text;
 
 namespace Topten.ThemeKit.Runtime
 {
+    /// <summary>
+    /// Represents a set of arthimetic/logic operator types
+    /// </summary>
     public enum OperatorType
     {
-        // Binary
+        /// <summary>Binary Add operator (+)</summary>
         Add,
+
+        /// <summary>Binary Subtract operator (-)</summary>
         Subtract,
+
+        /// <summary>Binary Multiply operator (*)</summary>
         Multiply,
+
+        /// <summary>Binary Divide operator (/)</summary>
         Divide,
+
+        /// <summary>Binary Modulus operator (%)</summary>
         Modulus,
+
+        /// <summary>Binary Compare operator</summary>
         Compare,
+
+        /// <summary>Binary Less Than operator (&lt;)</summary>
         CompareLT,
+
+        /// <summary>Binary Less Than Or Equal operator (&lt;=)</summary>
         CompareLE,
+
+        /// <summary>Binary Greater Than operator (&gt;)</summary>
         CompareGT,
+
+        /// <summary>Binary Greater Than Or Equal operator (&gt;=)</summary>
         CompareGE,
+
+        /// <summary>Binary Equality operator (==)</summary>
         CompareEQ,
+
+        /// <summary>Binary Inequality operator (!=)</summary>
         CompareNE,
+
+        /// <summary>Binary Bitwise And operator (&amp;)</summary>
         BitwiseAnd,
+
+        /// <summary>Binary Bitwise Or operator (-)</summary>
         BitwiseOr,
+
+        /// <summary>Binary Bitwise Xor operator (^)</summary>
         BitwiseXor,
+
+        /// <summary>Binary Logical And operator (&amp;&amp;)</summary>
         LogicalAnd,
+
+        /// <summary>Binary Logical Or operator (||)</summary>
         LogicalOr,
+
+        /// <summary>Binary Left Shift operator (&lt;&lt;)</summary>
         ShiftLeft,
+
+        /// <summary>Binary Right Shift operator (&gt;&gt;)</summary>
         ShiftRight,
 
-        // Unary
+        /// <summary>Unary Negate operator (-)</summary>
         Negate,
+
+        /// <summary>Unary Bitwise Not operator (~)</summary>
         BitwiseNot,
+
+        /// <summary>Unary Logical Not operator (!)</summary>
         LogicalNot,
     }
 
+    /// <summary>
+    /// A set of static helper methods for performing arthimetic and
+    /// logical operations on untyped "objects".
+    /// </summary>
     public static class Operators
     {
-        public static bool IsBinaryOp(OperatorType op)
-        {
-            return op >= OperatorType.Add && op <= OperatorType.ShiftRight;
-        }
-
+        /// <summary>
+        /// Checks if an operator is a unary operator
+        /// </summary>
+        /// <param name="op">The operator to check</param>
+        /// <returns>True if unary operator</returns>
         public static bool IsUnaryOp(OperatorType op)
         {
             return op >= OperatorType.Negate && op <= OperatorType.LogicalNot;
         }
 
-        // Add
+        /// <summary>
+        /// Checks if an operator is a binary operator
+        /// </summary>
+        /// <param name="op">The operator to check</param>
+        /// <returns>True if binary operator</returns>
+        public static bool IsBinaryOp(OperatorType op)
+        {
+            return op >= OperatorType.Add && op <= OperatorType.ShiftRight;
+        }
+
+        /// <summary>
+        /// Arithmetic Add
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Add(object a, object b)
         {
             switch (WiderType(a, b))
@@ -64,7 +126,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Subtract
+        /// <summary>
+        /// Arithmetic Subtract
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Subtract(object a, object b)
         {
             switch (WiderType(a, b))
@@ -82,7 +149,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Multiply
+        /// <summary>
+        /// Arithmetic Multiply
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Multiply(object a, object b)
         {
             switch (WiderType(a, b))
@@ -100,7 +172,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Divide
+        /// <summary>
+        /// Arithmetic Divide
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Divide(object a, object b)
         {
             switch (WiderType(a, b))
@@ -118,7 +195,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Modulus
+        /// <summary>
+        /// Arithmetic Modulus
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Modulus(object a, object b)
         {
             switch (WiderType(a, b))
@@ -136,7 +218,11 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Negate
+        /// <summary>
+        /// Arithmetic Negate
+        /// </summary>
+        /// <param name="a">The operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Negate(object a)
         {
             switch (WiderType(a, a))
@@ -153,7 +239,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Compare
+        /// <summary>
+        /// Arithmetic Comparison
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>-1 if a is less than b, 0 if equal, 1 if a is greater than b</returns>
         public static object Compare(object a, object b)
         {
             switch (WiderType(a, b))
@@ -173,44 +264,79 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Compare LT
+        /// <summary>
+        /// Compare two values for Less Than
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareLT(object a, object b)
         {
             return ((int)Compare(a, b)) < 0;
         }
 
-        // Compare LE
+        /// <summary>
+        /// Compare two values for Less Than or Equal
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareLE(object a, object b)
         {
             return ((int)Compare(a, b)) <= 0;
         }
 
-        // Compare GT
+        /// <summary>
+        /// Compare two values for Greater Than
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareGT(object a, object b)
         {
             return ((int)Compare(a, b)) > 0;
         }
 
-        // Compare GE
+        /// <summary>
+        /// Compare two values for Greater Than or Equal
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareGE(object a, object b)
         {
             return ((int)Compare(a, b)) >= 0;
         }
 
-        // Compare EQ
+        /// <summary>
+        /// Compare two values for Equality
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareEQ(object a, object b)
         {
             return ((int)Compare(a, b)) == 0;
         }
 
-        // Compare NE
+        /// <summary>
+        /// Compare two values for Inequality
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the comparison</returns>
         public static object CompareNE(object a, object b)
         {
             return ((int)Compare(a, b)) != 0;
         }
 
 
-        // Bitwise And
+        /// <summary>
+        /// Bitwise And
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object BitwiseAnd(object a, object b)
         {
             switch (WiderType(a, b))
@@ -225,7 +351,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Bitwize Or
+        /// <summary>
+        /// Bitwise Or
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object BitwiseOr(object a, object b)
         {
             switch (WiderType(a, b))
@@ -240,7 +371,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Bitwise Xor
+        /// <summary>
+        /// Bitwise Xor
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object BitwiseXor(object a, object b)
         {
             switch (WiderType(a, b))
@@ -255,7 +391,11 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Bitwise Not
+        /// <summary>
+        /// Bitwise Not
+        /// </summary>
+        /// <param name="a">The operand</param>
+        /// <returns>The result of the operation</returns>
         public static object BitwiseNot(object a)
         {
             switch (WiderType(a, a))
@@ -270,7 +410,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Logical And
+        /// <summary>
+        /// Logical And (not short-circuiting)
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object LogicalAnd(object a, object b)
         {
             switch (WiderType(a, b))
@@ -282,7 +427,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Logical Or
+        /// <summary>
+        /// Logical Or (not short-circuiting)
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object LogicalOr(object a, object b)
         {
             switch (WiderType(a, b))
@@ -294,7 +444,11 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Logical Not
+        /// <summary>
+        /// Logical Not
+        /// </summary>
+        /// <param name="a">The operand</param>
+        /// <returns>The result of the operation</returns>
         public static object LogicalNot(object a)
         {
             switch (WiderType(a, a))
@@ -306,7 +460,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Shift Left
+        /// <summary>
+        /// Bit Shift Left
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object ShiftLeft(object a, object b)
         {
             if (WiderType(b, b) == TypeCode.Int32)
@@ -324,7 +483,12 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Shift Right
+        /// <summary>
+        /// Bit Shift Right
+        /// </summary>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object ShiftRight(object a, object b)
         {
             if (WiderType(b, b) == TypeCode.Int32)
@@ -342,7 +506,13 @@ namespace Topten.ThemeKit.Runtime
             return null;
         }
 
-        // Arbitrary binary operation
+        /// <summary>
+        /// Evaluate a binary operation
+        /// </summary>
+        /// <param name="op">The type of operation</param>
+        /// <param name="a">The first operand</param>
+        /// <param name="b">The second operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Evaluate(OperatorType op, object a, object b)
         {
             if (op >= OperatorType.Add && op <= OperatorType.ShiftRight)
@@ -352,7 +522,12 @@ namespace Topten.ThemeKit.Runtime
             throw new ArgumentException();
         }
 
-        // Arbitrary unary operation
+        /// <summary>
+        /// Evaluate a unary operation
+        /// </summary>
+        /// <param name="op">The type of operation</param>
+        /// <param name="a">The operand</param>
+        /// <returns>The result of the operation</returns>
         public static object Evaluate(OperatorType op, object a)
         {
             if (op >= OperatorType.Negate && op <= OperatorType.LogicalNot)
@@ -503,10 +678,11 @@ namespace Topten.ThemeKit.Runtime
             if (value == null && !targetType.IsValueType)
                 return null;
 
+            var sourceType = value.GetType();
+
             // If converting floating point to non-floating point
             // then check the conversion is reversible
             // NB: We allow double to float assignment even if loss of precision
-            var sourceType = value.GetType();
             if ((sourceType == typeof(double) || sourceType == typeof(float)) &&
                  (targetType != typeof(double) && targetType != typeof(float)))
             {
@@ -516,6 +692,13 @@ namespace Topten.ThemeKit.Runtime
                     return targetValue;
                 else
                     throw new OverflowException($"Unable to convert '{sourceType}' to '{targetType}' without loss of precision");
+            }
+
+            // Don't implicitly convert bool
+            if ((targetType == typeof(bool) || sourceType == typeof(bool)) &&
+                targetType != sourceType)
+            {
+                throw new InvalidCastException($"Unable to impicitly convert '{sourceType}' to '{targetType}'");
             }
 
             return Convert.ChangeType(value, targetType);

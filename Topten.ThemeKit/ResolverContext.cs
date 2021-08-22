@@ -20,6 +20,11 @@ namespace Topten.ThemeKit
         {
         }
 
+        /// <summary>
+        /// Registers a method that can be called from user tkl file
+        /// </summary>
+        /// <param name="mi">The MethodInfo for the method</param>
+        /// <param name="instance">An object instance to be used for non-static methods</param>
         public void AddMethod(MethodInfo mi, object instance)
         {
             var entry = new Entry()
@@ -46,6 +51,10 @@ namespace Topten.ThemeKit
             list.Add(entry);
         }
 
+        /// <summary>
+        /// Registers all the public static methods from a type
+        /// </summary>
+        /// <param name="type">The type whose static methods are to be registered</param>
         public void AddStaticMethods(Type type)
         {
             foreach (var mi in type.GetMethods().Where(x => x.IsPublic && !x.IsSpecialName && x.IsStatic))
@@ -54,6 +63,10 @@ namespace Topten.ThemeKit
             }
         }
 
+        /// <summary>
+        /// Registers all instance methods from an object
+        /// </summary>
+        /// <param name="obj">The object instance to be registered</param>
         public void AddInstanceMethods(object obj)
         {
             foreach (var mi in obj.GetType().GetMethods().Where(x => x.IsPublic && !x.IsSpecialName && !x.IsStatic))
@@ -85,7 +98,7 @@ namespace Topten.ThemeKit
 
             // Find contenders
             MethodCallSelector sel = null;
-            foreach (var e in _implicitConversions.Where(x => x.mi.ReturnType.IsAssignableTo(targetType)))
+            foreach (var e in _implicitConversions.Where(x => x.mi.ReturnType == targetType))
             {
                 if (sel == null)
                     sel = new($"<implicit conversion to '{targetType}'>");

@@ -116,7 +116,7 @@ namespace Topten.ThemeKit
 
             // Setup include resolver
             parser.ResolveInclude = (pos, includeName) =>
-                StringSource.FromFile(Path.GetDirectoryName(pos.Source.Location), includeName);
+                StringSource.FromFile(Path.GetDirectoryName(pos.Source.FileName), includeName);
 
             // Parse document
             _resolver.AddDocument(parser.Parse());
@@ -168,11 +168,10 @@ namespace Topten.ThemeKit
         /// <summary>
         /// Internal helper to load theme
         /// </summary>
-        /// <param name="themeLoader">Where to load theme from</param>
-        /// <param name="packageName">Name of the theme to load</param>
+        /// <param name="package">The package to load from</param>
         void LoadPackageInternal(IResourceProvider package)
         {
-            /// Load the root document
+            // Load the root document
             var stringSource = new StringSource(package.ReadTextStream("main.tkl"), "main.tkl");
 
             // Create parser
@@ -256,11 +255,6 @@ namespace Topten.ThemeKit
         /// Get the provider's name (used for resource caching)
         /// </summary>
         public string ProviderName => $"Theme:{_packageName}";
-
-        /// <summary>
-        /// Parse a Theme document from a named stream
-        /// </summary>
-        /// <param name="name">The name of the stream</param>
 
         string _packageName;
         List<IResourceProvider> _packages;

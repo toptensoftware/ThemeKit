@@ -4,8 +4,16 @@ using System.Text;
 
 namespace Topten.ThemeKit
 {
+    /// <summary>
+    /// Provides the contents of a text file, along with its filename
+    /// </summary>
     public class StringSource
     {
+        /// <summary>
+        /// Constructs a string source for a file
+        /// </summary>
+        /// <param name="filename">The name of the file to read</param>
+        /// <returns>A StringSource for the specified file</returns>
         public static StringSource FromFile(string filename)
         {
             // Make sure path is fully qualified
@@ -14,11 +22,17 @@ namespace Topten.ThemeKit
             // Open string source
             return new StringSource(
                 File.ReadAllText(filename),
-                Path.GetFileName(filename),
-                Path.GetDirectoryName(filename)
+                filename
                 );
         }
 
+        /// <summary>
+        /// Constructs a string source for a file, resolving the full
+        /// path from a base directory.
+        /// </summary>
+        /// <param name="baseDirectory">The base directory</param>
+        /// <param name="filename">The file name, which if not fully qualified will be resolved to the base directory</param>
+        /// <returns>A StringSource for the specified file</returns>
         public static StringSource FromFile(string baseDirectory, string filename)
         {
             // Make sure path is fully qualified
@@ -27,13 +41,16 @@ namespace Topten.ThemeKit
             // Open string source
             return new StringSource(
                 File.ReadAllText(filename),
-                Path.GetFileName(filename),
-                Path.GetDirectoryName(filename)
+                filename
                 );
         }
 
-        // Construct a string source from a string
-        public StringSource(string str, string displayName = null, string location = null)
+        /// <summary>
+        /// Construct a string source from a string
+        /// </summary>
+        /// <param name="str">The content of the file</param>
+        /// <param name="filename">The filename associated with the string</param>
+        public StringSource(string str, string filename)
         {
             // Remove BOM
             if (str.Length > 0 && (str[0] == 0xFFFE || str[0] == 0xFEFF))
@@ -43,72 +60,105 @@ namespace Topten.ThemeKit
             _pos = 0;
             _startPos = 0;
             _stopPos = str.Length;
-            _displayName = displayName;
-            _location = location;
+            _filename = filename;
 
             // Skip BOM if exists
             if (!Skip((char)0xFFFE))
                 Skip((char)0xFEFF);
         }
 
-        // Construct a string source from a string
-        public StringSource(string str, int startPos, int length, string displayName = null, string location = null)
+
+        /// <summary>
+        /// Construct a string source from a substring of another string
+        /// </summary>
+        /// <param name="str">The string content</param>
+        /// <param name="startPos">The starting offset</param>
+        /// <param name="length">The length of the slice</param>
+        /// <param name="filename">The associated filename</param>
+        public StringSource(string str, int startPos, int length, string filename = null)
         {
             _str = str;
             _pos = startPos;
             _startPos = startPos;
             _stopPos = startPos + length;
-            _displayName = displayName;
-            _location = location;
+            _filename = filename;
         }
 
+        /// <summary>
+        /// Gets the source text for this StringSource
+        /// </summary>
         public string SourceText
         {
             get { return _str.Substring(_startPos, _stopPos - _startPos); }
         }
 
+        /// <summary>
+        /// Creates a new StringSource from a section of this one
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public StringSource CreateEmbeddedSource(int from, int length)
         {
-            return new StringSource(_str, from, length, _displayName, _location);
+            return new StringSource(_str, from, length, _filename);
         }
 
+        /// <summary>
+        /// Creates a SourcePosition for a location
+        /// </summary>
+        /// <param name="position">The character offset of the position</param>
+        /// <returns>A SourcePosition describing the position</returns>
         public SourcePosition CreatePosition(int position)
         {
             return new SourcePosition(this, position);
         }
 
+        /// <summary>
+        /// Creates a SourcePosition for a location based on a line number
+        /// </summary>
+        /// <param name="line">The line number</param>
+        /// <returns>A SourcePosition describing the position</returns>
         public SourcePosition CreateLinePosition(int line)
         {
             return new SourcePosition(this, LineNumbers.ToFileOffset(line, 0));
         }
 
+        /// <summary>
+        /// Creates a position marker for the EOF of this StringSource
+        /// </summary>
+        /// <returns>A SourcePosition describing the EOF</returns>
         public SourcePosition CreateEndPosition()
         {
             return CreatePosition(_stopPos);
         }
 
+        /// <summary>
+        /// Creates a SourcePosition for the current read position
+        /// </summary>
+        /// <returns>A SourcePosition</returns>
         public SourcePosition CapturePosition()
         {
             return new SourcePosition(this, _pos);
         }
 
-        string _str;
-        int _pos;
-        int _startPos;
-        int _stopPos;
-        string _displayName;
-        string _location;
+        /// <summary>
+        /// Gets the filename associated with this StringSource
+        /// </summary>
+        public string FileName => _filename;
 
-        public string DisplayName => _displayName;
-        public string Location => _location;
-
-        // Have we reached the end of the file?
+        /// <summary>
+        /// True if the current position is at EOF
+        /// </summary>
         public bool EOF => _pos >= _stopPos;
 
-        // The current character
+        /// <summary>
+        /// The current character 
+        /// </summary>
         public char Current => _pos < _stopPos ? _str[_pos] : '\0';
 
-        // The current position
+        /// <summary>
+        /// The current position 
+        /// </summary>
         public int Position
         {
             get => _pos;
@@ -119,40 +169,57 @@ namespace Topten.ThemeKit
             }
         }
 
-        // The remaining text (handy for watching in debugger)
+        /// <summary>
+        /// The remaining text (handy for watching in debugger) 
+        /// </summary>
         public string Remaining => _str.Substring(_pos);
 
-        // The character at offset from current
+        /// <summary>
+        /// The character at offset from current 
+        /// </summary>
+        /// <param name="offset">The offset</param>
+        /// <returns>The character at that offset</returns>
         public char CharAt(int offset)
         {
             var pos = _pos + offset;
             return pos < _stopPos ? _str[pos] : '\0';
         }
 
-        // Move by n places
-        public void Move(int delta)
+        /// <summary>
+        /// Move the current position by a number of characters
+        /// </summary>
+        /// <param name="deltaChars"></param>
+        public void Move(int deltaChars)
         {
-            _pos += delta;
+            _pos += deltaChars;
             if (_pos < 0)
                 _pos = 0;
             if (_pos > _stopPos)
                 _pos = _stopPos;
         }
 
-        // Move to the next character (if available)
+        /// <summary>
+        /// Move to the next character (if available) 
+        /// </summary>
         public void Next()
         {
             if (_pos < _stopPos)
                 _pos++;
         }
 
-        // Move to the previous character
+        /// <summary>
+        /// Move to the previous character 
+        /// </summary>
         public void Previous()
         {
             if (_pos > 0)
                 _pos--;
         }
 
+        /// <summary>
+        /// Return the rest of the string and move to EOF
+        /// </summary>
+        /// <returns></returns>
         public string SkipRemaining()
         {
             var str = Remaining;
@@ -160,6 +227,9 @@ namespace Topten.ThemeKit
             return str;
         }
 
+        /// <summary>
+        /// True if the current position is at the end of a line
+        /// </summary>
         public bool EOL
         {
             get
@@ -171,6 +241,10 @@ namespace Topten.ThemeKit
             }
         }
 
+        /// <summary>
+        /// Move the current position to the end of the current line
+        /// </summary>
+        /// <returns>True if the current position moved</returns>
         public bool SkipToEOL()
         {
             // Skip to end of line
@@ -180,6 +254,10 @@ namespace Topten.ThemeKit
             return _pos > start;
         }
 
+        /// <summary>
+        /// Move the current position over the CR/LF at the current position
+        /// </summary>
+        /// <returns>True if the current position moved</returns>
         public bool SkipEOL()
         {
             int oldPos = _pos;
@@ -190,6 +268,10 @@ namespace Topten.ThemeKit
             return _pos > oldPos;
         }
 
+        /// <summary>
+        /// Move the current position to the next line
+        /// </summary>
+        /// <returns>True if the current position moved</returns>
         public bool SkipToNextLine()
         {
             int start = _pos;
@@ -198,7 +280,10 @@ namespace Topten.ThemeKit
             return _pos > start;
         }
 
-        // Skip whitespace
+        /// <summary>
+        /// Skip over any whitespace on the current line
+        /// </summary>
+        /// <returns>True if the current position moved</returns>
         public bool SkipLinespace()
         {
             if (_pos >= _stopPos)
@@ -214,12 +299,10 @@ namespace Topten.ThemeKit
 
         }
 
-        bool IsLineSpace(char ch)
-        {
-            return ch == ' ' || ch == '\t';
-        }
-
-        // Skip whitespace
+        /// <summary>
+        /// Skip over any whitespace at the current position
+        /// </summary>
+        /// <returns>True if the current position moved</returns>
         public bool SkipWhitespace()
         {
             if (_pos >= _stopPos)
@@ -234,7 +317,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Check if the current position in the string matches a substring
+        /// <summary>
+        /// Check if the current position in the string matches a substring (case sensitive)
+        /// </summary>
+        /// <param name="str">The string to check for</param>
+        /// <returns>True if the current position matches the specified string</returns>
         public bool DoesMatch(string str)
         {
             if (_pos + str.Length > _stopPos)
@@ -249,7 +336,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Check if the current position in the string matches a substring (case insensitive)
+        /// <summary>
+        /// Check if the current position in the string matches a substring (case insensitive)
+        /// </summary>
+        /// <param name="str">The string to check for</param>
+        /// <returns>True if the current position matches the specified string</returns>
         public bool DoesMatchI(string str)
         {
             if (_pos + str.Length > _stopPos)
@@ -264,7 +355,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Skip forward until a particular string is matched
+        /// <summary>
+        /// Skip forward until a particular string is matched (case sensitive)
+        /// </summary>
+        /// <param name="str">The string to search for</param>
+        /// <returns>True if the string was found</returns>
         public bool SkipUntil(string str)
         {
             while (_pos < _stopPos)
@@ -276,7 +371,11 @@ namespace Topten.ThemeKit
             return false;
         }
 
-        // Skip forward until a particular string is matched (case insensitive)
+        /// <summary>
+        /// Skip forward until a particular string is matched (case insensitive)
+        /// </summary>
+        /// <param name="str">The string to search for</param>
+        /// <returns>True if the string was found</returns>
         public bool SkipUntilI(string str)
         {
             while (_pos < _stopPos)
@@ -288,7 +387,11 @@ namespace Topten.ThemeKit
             return false;
         }
 
-        // Skip characters matching predicate
+        /// <summary>
+        /// Skip characters matching predicate 
+        /// </summary>
+        /// <param name="predicate">The predicate callback</param>
+        /// <returns>True any characters were skipped</returns>
         public bool Skip(Func<char, bool> predicate)
         {
             if (_pos >= _stopPos || !predicate(_str[_pos]))
@@ -300,7 +403,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Skip the specified character
+        /// <summary>
+        /// Skip one instance of the specified character (case sensitive)
+        /// </summary>
+        /// <param name="ch">The character to skip</param>
+        /// <returns>True if the character was skipped</returns>
         public bool Skip(char ch)
         {
             if (_pos >= _stopPos)
@@ -313,7 +420,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Skip the specified character
+        /// <summary>
+        /// Skip one instance of the specified character (case insensitive)
+        /// </summary>
+        /// <param name="ch">The character to skip</param>
+        /// <returns>True if the character was skipped</returns>
         public bool SkipI(char ch)
         {
             if (_pos >= _stopPos)
@@ -326,7 +437,11 @@ namespace Topten.ThemeKit
             return true;
         }
 
-        // Skip a string (case sensitive)
+        /// <summary>
+        /// Skip a string (case sensitive) 
+        /// </summary>
+        /// <param name="str">The string to skip</param>
+        /// <returns>True if the string was found at the current position</returns>
         public bool Skip(string str)
         {
             if (DoesMatch(str))
@@ -337,7 +452,11 @@ namespace Topten.ThemeKit
             return false;
         }
 
-        // Skip a string (case insensitive)
+        /// <summary>
+        /// Skip a string (case insensitive) 
+        /// </summary>
+        /// <param name="str">The string to skip</param>
+        /// <returns>True if the string was found at the current position</returns>
         public bool SkipI(string str)
         {
             if (DoesMatchI(str))
@@ -348,18 +467,32 @@ namespace Topten.ThemeKit
             return false;
         }
 
-        // Extract text from the specified position to the current position
+        /// <summary>
+        /// Extract text from the specified position to the current position 
+        /// </summary>
+        /// <param name="fromPosition">The start position of the string to extract</param>
+        /// <returns>The extracted string</returns>
         public string Extract(int fromPosition)
         {
             return _str.Substring(fromPosition, _pos - fromPosition);
         }
 
+        /// <summary>
+        /// Extract text from the specified range
+        /// </summary>
+        /// <param name="fromPosition">The start position (inclusive)</param>
+        /// <param name="toPosition">The end position (exlusive)</param>
+        /// <returns>The extracted string</returns>
         public string Extract(int fromPosition, int toPosition)
         {
             return _str.Substring(fromPosition, toPosition - fromPosition);
         }
 
-        // Skip characters matching predicate and return the matched characters
+        /// <summary>
+        /// Skip characters matching predicate and return the matched characters
+        /// </summary>
+        /// <param name="predicate">The predicate callback</param>
+        /// <returns>The skipped characters</returns>
         public string SkipAndExtract(Func<char, bool> predicate)
         {
             int pos = _pos;
@@ -369,7 +502,7 @@ namespace Topten.ThemeKit
         }
 
         LineNumbers _lineNumbers;
-        public LineNumbers LineNumbers
+        internal LineNumbers LineNumbers
         {
             get
             {
@@ -379,6 +512,11 @@ namespace Topten.ThemeKit
             }
         }
 
+        /// <summary>
+        /// Extract a line
+        /// </summary>
+        /// <param name="line">The zero based index of the line to extract</param>
+        /// <returns>The extracted line text</returns>
         public string ExtractLine(int line)
         {
             int linePos = LineNumbers.ToFileOffset(line, 0);
@@ -391,6 +529,13 @@ namespace Topten.ThemeKit
         }
 
         StringBuilder _sb = new StringBuilder();
+
+        /// <summary>
+        /// Process characters from the current position through a callback 
+        /// building up a string in a StringBuilder.
+        /// </summary>
+        /// <param name="callback">The process callback</param>
+        /// <returns>The contents of the built string</returns>
         public string Process(Func<char, StringBuilder, bool> callback)
         {
             _sb.Length = 0;
@@ -401,25 +546,53 @@ namespace Topten.ThemeKit
             return _sb.ToString();
         }
 
+        static bool IsLineSpace(char ch)
+        {
+            return ch == ' ' || ch == '\t';
+        }
+
+
+        string _str;
+        int _pos;
+        int _startPos;
+        int _stopPos;
+        string _filename;
+
 
     }
 
 
-    // Represents a position within a StringSource
-    // with helpers to map back to the source itself and the line
-    // number and character offset
+    /// <summary>
+    /// Represents a position within a StringSource
+    /// with helpers to map back to the source itself and the line
+    /// number and character offset
+    /// </summary>
     public class SourcePosition
     {
+        /// <summary>
+        /// Constructs a new SourcePosition
+        /// </summary>
+        /// <param name="source">The StringSource</param>
+        /// <param name="pos">The position in the file</param>
         public SourcePosition(StringSource source, int pos)
         {
             Source = source;
             Position = pos;
         }
 
+        /// <summary>
+        /// The StringSource of this position
+        /// </summary>
         public StringSource Source;
+
+        /// <summary>
+        /// The character offset into the file of the position
+        /// </summary>
         public int Position;
-        public int _lineNumber = -1;
-        public int _charPosition = -1;
+
+        /// <summary>
+        /// The zero-based line number of the position
+        /// </summary>
         public int LineNumber
         {
             get
@@ -432,6 +605,9 @@ namespace Topten.ThemeKit
             }
         }
 
+        /// <summary>
+        /// The zero based character offset within the line
+        /// </summary>
         public int CharacterPosition
         {
             get
@@ -443,6 +619,9 @@ namespace Topten.ThemeKit
                 return _charPosition;
             }
         }
+
+        int _lineNumber = -1;
+        int _charPosition = -1;
     }
 
     internal static partial class StringSourceUtils
@@ -452,7 +631,7 @@ namespace Topten.ThemeKit
             if (pos == null)
                 return "<unknown>";
             else
-                return $"{pos.Source.DisplayName}({pos.LineNumber + 1},{pos.CharacterPosition + 1})";
+                return $"{pos.Source.FileName}({pos.LineNumber + 1},{pos.CharacterPosition + 1})";
         }
     }
 }

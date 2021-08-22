@@ -508,6 +508,8 @@ namespace Topten.ThemeKit
         {
             // Get contenders
             var contenders = Context.GetFunctionsByName(el.Name);
+            if (contenders == null)
+                throw new CodeException($"Unknown method '{el.Name}'", el.Position);
 
             // Apply implicit arguments
             contenders.ApplyImplicitArguments(ImplicitArgValues);

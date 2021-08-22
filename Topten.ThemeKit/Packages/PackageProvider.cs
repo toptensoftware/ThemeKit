@@ -34,6 +34,7 @@ namespace Topten.ThemeKit
         /// Adds an assembly to the theme loader
         /// </summary>
         /// <param name="assembly">The assembly to be checked for theme files</param>
+        /// <param name="prefix">An optional prefix to prepend to stream names</param>
         public void AddAssembly(Assembly assembly, string prefix)
         {
             _locations.Add(new AssemblyInfo()

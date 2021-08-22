@@ -14,8 +14,9 @@ namespace Topten.ThemeKit
     public class ZipPackage : IResourceProvider
     {
         /// <summary>
-        /// Constructs a new ThemeReaderZipArchive
+        /// Constructs a new ZipPackage for a stream
         /// </summary>
+        /// <param name="name">A name describing this zip package</param>
         /// <param name="zipStream">A stream containing the zip archive</param>
         public ZipPackage(string name, Stream zipStream)
         {
@@ -24,7 +25,7 @@ namespace Topten.ThemeKit
         }
 
         /// <summary>
-        /// Constructs a new ThemeReaderZipArchive
+        /// Constructs a new ZipPackage for a file
         /// </summary>
         /// <param name="filename">A stream containing the zip archive</param>
         public ZipPackage(string filename)

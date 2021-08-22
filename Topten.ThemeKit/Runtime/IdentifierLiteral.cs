@@ -6,13 +6,27 @@ using System.Threading.Tasks;
 
 namespace Topten.ThemeKit.Runtime
 {
+    /// <summary>
+    /// Represents an identifier literal
+    /// </summary>
     public struct IdentifierLiteral
     {
+        /// <summary>
+        /// Constructs a new identifier literal
+        /// </summary>
+        /// <param name="identifier">The identifier name</param>
         public IdentifierLiteral(string identifier)
         {
             Identifier = identifier;
         }
 
-        public string Identifier;
+        /// <summary>
+        /// Gets the identifier name
+        /// </summary>
+        public string Identifier
+        {
+            get;
+            private set;
+        }
     }
 }

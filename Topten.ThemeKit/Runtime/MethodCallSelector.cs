@@ -47,8 +47,8 @@ namespace Topten.ThemeKit.Runtime
         /// </summary>
         public void RemoveContendersWithUnresolvedImplicitParameters()
         {
-            _totalOverloadCount = _contenders.Count;
             _contenders.RemoveAll(x => x.HasUnresolveImplicitParameters);
+            _totalOverloadCount = _contenders.Count;
         }
 
         /// <summary>
@@ -94,10 +94,11 @@ namespace Topten.ThemeKit.Runtime
         }
 
         /// <summary>
-        /// Remove all contenders that have a particular parameter type
+        /// Registers that there was an error evaluating a call argument
         /// </summary>
-        /// <param name="parameterIndex">The index of the parameter to check</param>
+        /// <param name="parameterIndex">The index of the parameter</param>
         /// <param name="type">The parameter type</param>
+        /// <param name="exception">The exception that occurred</param>
         public void SetArgumentError(int parameterIndex, Type type, Exception exception)
         {
             foreach (var c in _contenders)
@@ -135,11 +136,12 @@ namespace Topten.ThemeKit.Runtime
             
             // Find the winners
             var winners = _contenders.Where(x => x.CanInvoke);
+            int winnerCount = winners.Count();
 
             // Was there just one?
-            var winner = winners.SingleOrDefault();
-            if (winner != null)
+            if (winnerCount == 1)
             {
+                var winner = winners.First();
                 try
                 {
                     return winner.Invoke();
@@ -150,9 +152,10 @@ namespace Topten.ThemeKit.Runtime
                 }
             }
 
-            if (winners.Any())
+            if (winnerCount > 1)
             {
-                throw new CodeException($"Couldn't resolve call to '{_name}' based on arguments.", callsite);
+                var matches = string.Join("", winners.Select(x => $"\n\t- {x.MethodInfo.ToString()}"));
+                throw new CodeException($"Multiple matching overloads for '{_name}' based on arguments.{matches}", callsite);
             }
 
             if (_contenders.Count > 1)

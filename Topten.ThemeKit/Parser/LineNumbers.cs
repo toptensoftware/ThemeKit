@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Topten.ThemeKit
 {
-    public class LineNumbers
+    internal class LineNumbers
     {
         public LineNumbers(string str)
         {
